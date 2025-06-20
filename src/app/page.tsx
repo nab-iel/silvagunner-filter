@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { Video } from "app/interface";
-import VideoCard from "./components/videocard";
+import { VideoCard } from "./components/VideoCard";
+import { Button } from "./components/ui/Button";
+import { Input } from "./components/ui/Input";
+import { Select } from "./components/ui/Select";
+import {
+  MessageContainer,
+  VideoGrid,
+  Section,
+} from "./components/ui/Layout";
 
 // Helper to convert "HH:MM:SS" or "MM:SS" to seconds for filtering
 const durationToSeconds = (durationStr: string | null): number => {
@@ -129,44 +137,41 @@ export default function Home() {
   return (
     <main className="flex min-h-screen bg-white dark:bg-black">
       {/* Sidebar */}
-      <div className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800 flex-shrink-0">
+      <aside className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800 flex-shrink-0">
         <h1 className="text-2xl font-bold">SiIvaGunner Filter</h1>
         <div className="flex flex-col gap-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Click the button to fetch the latest videos from the SiIvaGunner
             channel.
           </p>
-          <button
+          <Button
+            size="full"
             onClick={() => fetchVideoData()}
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-500 transition-colors"
           >
             {loading ? "Loading..." : "Fetch Video Data"}
-          </button>
+          </Button>
         </div>
 
-        {/* Filter & Sort Section */}
-        <div className="flex flex-col gap-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <Section>
           <h2 className="text-lg font-semibold">Filters & Sorting</h2>
           <div>
             <label className="block text-sm font-medium mb-1">
               Duration (seconds)
             </label>
             <div className="flex items-center gap-2">
-              <input
+              <Input
                 type="number"
                 placeholder="Min"
                 value={minDuration}
                 onChange={(e) => setMinDuration(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
               />
               <span className="text-gray-500">-</span>
-              <input
+              <Input
                 type="number"
                 placeholder="Max"
                 value={maxDuration}
                 onChange={(e) => setMaxDuration(e.target.value)}
-                className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
               />
             </div>
           </div>
@@ -177,101 +182,69 @@ export default function Home() {
             >
               Minimum View Count
             </label>
-            <input
+            <Input
               type="number"
               id="minViews"
               placeholder="e.g., 10000"
               value={minViews}
               onChange={(e) => setMinViews(e.target.value)}
-              className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
             />
           </div>
           <div>
             <label htmlFor="sortBy" className="block text-sm font-medium mb-1">
               Sort By
             </label>
-            <select
+            <Select
               id="sortBy"
               value={sortBy}
               onChange={(e) =>
                 setSortBy(e.target.value as "newest" | "oldest" | "popularity")
               }
-              className="w-full px-3 py-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
               <option value="popularity">Most Popular</option>
-            </select>
+            </Select>
           </div>
-        </div>
-      </div>
+        </Section>
+      </aside>
 
       {/* Main Content */}
       <div className="flex-1 p-6 overflow-auto">
-        {error && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-red-500">{error}</p>
-          </div>
+        {error && <MessageContainer>{error}</MessageContainer>}
+        {loading && <MessageContainer>Loading videos...</MessageContainer>}
+
+        {!loading && !error && videoData.length === 0 && (
+          <MessageContainer>
+            Click "Fetch Video Data" to see the results.
+          </MessageContainer>
         )}
 
-        {loading && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">Loading videos...</p>
-          </div>
-        )}
-
-        {!loading &&
-          !error &&
-          videoData.length > 0 &&
-          processedVideoData.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8">
-              {processedVideoData.map((video) => (
-                <VideoCard key={video.id} video={video} />
-              ))}
-            </div>
-          )}
-
-        {!loading &&
-          !error &&
-          videoData.length > 0 &&
-          processedVideoData.length > 0 && (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8">
+        {!loading && !error && videoData.length > 0 && (
+          <>
+            {processedVideoData.length > 0 ? (
+              <VideoGrid>
                 {processedVideoData.map((video) => (
                   <VideoCard key={video.id} video={video} />
                 ))}
-              </div>
-              {nextPageToken && (
-                <div className="flex justify-center mt-8">
-                  <button
-                    onClick={() => fetchVideoData(nextPageToken)}
-                    disabled={loadingMore}
-                    className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:bg-gray-500 transition-colors"
-                  >
-                    {loadingMore ? "Loading..." : "Load More"}
-                  </button>
-                </div>
-              )}
-            </>
-          )}
-
-        {!loading &&
-          !error &&
-          videoData.length > 0 &&
-          processedVideoData.length === 0 && (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500">
+              </VideoGrid>
+            ) : (
+              <MessageContainer>
                 No videos match your current filters.
-              </p>
-            </div>
-          )}
+              </MessageContainer>
+            )}
 
-        {!loading && !error && videoData.length === 0 && (
-          <div className="flex items-center justify-center h-full">
-            <p className="text-gray-500">
-              Click "Fetch Video Data" to see the results.
-            </p>
-          </div>
+            {nextPageToken && (
+              <div className="flex justify-center mt-8">
+                <Button
+                  onClick={() => fetchVideoData(nextPageToken)}
+                  disabled={loadingMore}
+                >
+                  {loadingMore ? "Loading..." : "Load More"}
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </main>

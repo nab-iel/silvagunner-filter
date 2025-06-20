@@ -14,7 +14,7 @@ function formatViewCount(count: string): string {
   return `${num} views`;
 }
 
-export default function VideoCard({ video }: { video: Video }) {
+export function VideoCard({ video }: { video: Video }) {
   const publishedDate = new Date(video.snippet.publishedAt).toLocaleDateString(
     "en-US",
     {
@@ -44,15 +44,7 @@ export default function VideoCard({ video }: { video: Video }) {
         )}
       </a>
       <div className="flex flex-col">
-        <h3
-          className="font-semibold text-sm leading-snug"
-          style={{
-            display: "-webkit-box",
-            WebkitLineClamp: 2,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-          }}
-        >
+        <h3 className="font-semibold text-sm leading-snug line-clamp-2">
           {video.snippet.title}
         </h3>
         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
