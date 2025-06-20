@@ -29,7 +29,9 @@ export default function Home() {
   const [videoData, setVideoData] = useState<Video[]>([]);
   const [processedVideoData, setProcessedVideoData] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [nextPageToken, setNextPageToken] = useState<string | null>(null);
   const [minDuration, setMinDuration] = useState("");
   const [maxDuration, setMaxDuration] = useState("");
   const [minViews, setMinViews] = useState("");
@@ -37,10 +39,15 @@ export default function Home() {
     "newest"
   );
 
-  const fetchVideoData = async () => {
-    setLoading(true);
+  const fetchVideoData = async (token: string | null = null) => {
+    const isInitialLoad = token === null;
+    if (isInitialLoad) {
+      setLoading(true);
+      setVideoData([]);
+    } else {
+      setLoadingMore(true);
+    }
     setError(null);
-    setVideoData([]);
 
     try {
       const res = await fetch("/api/youtube", {
@@ -48,7 +55,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ pageToken: token }),
       });
 
       const data = await res.json();
@@ -57,14 +64,18 @@ export default function Home() {
         throw new Error(data.error || "Something went wrong");
       }
 
-      setVideoData(data);
+      setVideoData((prev) => [...prev, ...data.videos]);
+      setNextPageToken(data.nextPageToken);
     } catch (err: any) {
       setError(err.message);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) {
+        setLoading(false);
+      } else {
+        setLoadingMore(false);
+      }
     }
   };
-
   useEffect(() => {
     let processedData = [...videoData];
 
@@ -119,14 +130,14 @@ export default function Home() {
     <main className="flex min-h-screen bg-white dark:bg-black">
       {/* Sidebar */}
       <div className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800 flex-shrink-0">
-        <h1 className="text-2xl font-bold">YouTube API Tester</h1>
+        <h1 className="text-2xl font-bold">SiIvaGunner Filter</h1>
         <div className="flex flex-col gap-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Click the button to fetch the latest videos from the SiIvaGunner
             channel.
           </p>
           <button
-            onClick={fetchVideoData}
+            onClick={() => fetchVideoData()}
             disabled={loading}
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-gray-500 transition-colors"
           >
@@ -218,6 +229,30 @@ export default function Home() {
                 <VideoCard key={video.id} video={video} />
               ))}
             </div>
+          )}
+
+        {!loading &&
+          !error &&
+          videoData.length > 0 &&
+          processedVideoData.length > 0 && (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8">
+                {processedVideoData.map((video) => (
+                  <VideoCard key={video.id} video={video} />
+                ))}
+              </div>
+              {nextPageToken && (
+                <div className="flex justify-center mt-8">
+                  <button
+                    onClick={() => fetchVideoData(nextPageToken)}
+                    disabled={loadingMore}
+                    className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 disabled:bg-gray-500 transition-colors"
+                  >
+                    {loadingMore ? "Loading..." : "Load More"}
+                  </button>
+                </div>
+              )}
+            </>
           )}
 
         {!loading &&

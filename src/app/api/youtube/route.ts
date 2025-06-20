@@ -17,8 +17,10 @@ function parseDuration(duration: string): string {
   return `${h}${m}:${s}`;
 }
 
-export async function POST() {
+export async function POST(request: Request) {
+  const { pageToken } = await request.json();
   const apiKey = process.env.YOUTUBE_API_KEY;
+  const playlistId = "UU9ecwl3FTG66jIKA9JRDtmg"; // Uploads playlist ID for SiIlvaGunner
 
   if (!apiKey) {
     return NextResponse.json(
@@ -28,9 +30,12 @@ export async function POST() {
   }
 
   try {
-    const res = await fetch(
-      `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=UU9ecwl3FTG66jIKA9JRDtmg&maxResults=50&key=${apiKey}`
-    );
+    let url = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${playlistId}&maxResults=50&key=${apiKey}`;
+    if (pageToken) {
+      url += `&pageToken=${pageToken}`;
+    }
+
+    const res = await fetch(url);
 
     if (!res.ok) {
       const errorData = await res.json();
@@ -42,9 +47,10 @@ export async function POST() {
 
     const data = await res.json();
     const videoItems = data.items;
+    const nextPageToken = data.nextPageToken || null;
 
     if (!videoItems || videoItems.length === 0) {
-      return NextResponse.json([]);
+      return NextResponse.json({ videos: [], nextPageToken: null });
     }
 
     const videoIds = videoItems
@@ -53,7 +59,7 @@ export async function POST() {
       .join(",");
 
     if (!videoIds) {
-      return NextResponse.json(videoItems); // Return items without details if IDs are missing
+      return NextResponse.json({ videos: videoItems, nextPageToken });
     }
 
     const videoDetailsRes = await fetch(
@@ -80,7 +86,7 @@ export async function POST() {
       };
     });
 
-    return NextResponse.json(combinedData);
+    return NextResponse.json({ videos: combinedData, nextPageToken });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
