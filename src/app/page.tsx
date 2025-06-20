@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import { Video } from "app/interface";
+import VideoCard from "./components/videocard";
 
 export default function Home() {
-  const [videoData, setVideoData] = useState<any>(null);
+  const [videoData, setVideoData] = useState<Video[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchVideoData = async () => {
     setLoading(true);
     setError(null);
-    setVideoData(null);
+    setVideoData([]);
 
     try {
       const res = await fetch("/api/youtube", {
@@ -38,9 +40,13 @@ export default function Home() {
   return (
     <main className="flex min-h-screen bg-white dark:bg-black">
       {/* Sidebar */}
-      <div className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800">
+      <div className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800 flex-shrink-0">
         <h1 className="text-2xl font-bold">YouTube API Tester</h1>
         <div className="flex flex-col gap-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Click the button to fetch the latest videos from the SiIvaGunner
+            channel.
+          </p>
           <button
             onClick={fetchVideoData}
             disabled={loading}
@@ -59,19 +65,24 @@ export default function Home() {
           </div>
         )}
 
-        {videoData && (
-          <div>
-            <h2 className="text-2xl font-bold mb-4">API Response</h2>
-            <pre className="bg-gray-50 dark:bg-gray-900 p-4 rounded-md text-left text-sm border border-gray-200 dark:border-gray-700">
-              {JSON.stringify(videoData, null, 2)}
-            </pre>
+        {loading && (
+          <div className="flex items-center justify-center h-full">
+            <p className="text-gray-500">Loading videos...</p>
           </div>
         )}
 
-        {!videoData && !error && (
+        {!loading && !error && videoData.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8">
+            {videoData.map((video) => (
+              <VideoCard key={video.id} video={video} />
+            ))}
+          </div>
+        )}
+
+        {!loading && !error && videoData.length === 0 && (
           <div className="flex items-center justify-center h-full">
             <p className="text-gray-500">
-              Enter a Video ID to fetch data.
+              Click "Fetch Video Data" to see the results.
             </p>
           </div>
         )}
