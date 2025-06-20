@@ -25,7 +25,7 @@ This is a full-stack web application built with Next.js that allows users to bro
 
 ## Motivation
 
-SiIlvaGunner is known for there amazing rips, but sometimes I just want to weave through the endless uploads to see which ones I personally like with ease. Although a bit limited, this project aims to create an interface that I could easily do that. It is still a WIP as I aim to clean up the CSS, but functionally it is largely complete.
+SiIlvaGunner is known for their amazing rips, but sometimes I just want to weave through the endless uploads to see which ones I personally like with ease. Although a bit limited, this project aims to create an interface that I could easily do that. May possibly publish this into a website, but those are plans for the future.
 
 ## Getting Started
 
