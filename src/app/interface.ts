@@ -13,4 +13,7 @@ export interface Video {
     };
   };
   duration: string | null;
+  statistics: {
+    viewCount: string;
+  } | null;
 }

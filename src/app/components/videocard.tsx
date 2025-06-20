@@ -2,6 +2,18 @@
 
 import { Video } from "app/interface";
 
+function formatViewCount(count: string): string {
+  const num = parseInt(count);
+  if (isNaN(num)) return "";
+  if (num >= 1_000_000) {
+    return `${(num / 1_000_000).toFixed(1)}M views`;
+  }
+  if (num >= 1_000) {
+    return `${Math.floor(num / 1_000)}K views`;
+  }
+  return `${num} views`;
+}
+
 export default function VideoCard({ video }: { video: Video }) {
   const publishedDate = new Date(video.snippet.publishedAt).toLocaleDateString(
     "en-US",
@@ -43,9 +55,13 @@ export default function VideoCard({ video }: { video: Video }) {
         >
           {video.snippet.title}
         </h3>
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {publishedDate}
-        </p>
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-center gap-1.5">
+          {video.statistics && (
+            <span>{formatViewCount(video.statistics.viewCount)}</span>
+          )}
+          {video.statistics && <span>•</span>}
+          <span>{publishedDate}</span>
+        </div>
       </div>
     </div>
   );
