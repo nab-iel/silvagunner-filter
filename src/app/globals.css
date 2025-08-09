@@ -20,7 +20,59 @@
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--background); /* fallback */
+  background:
+    radial-gradient(at 20% 20%, rgba(99,102,241,0.18), transparent 60%),
+    radial-gradient(at 80% 30%, rgba(14,165,233,0.18), transparent 65%),
+    linear-gradient(var(--background), var(--background));
+  transition: background-color .4s ease, color .4s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background:
+      radial-gradient(at 15% 25%, rgba(99,102,241,0.25), transparent 60%),
+      radial-gradient(at 85% 35%, rgba(56,189,248,0.25), transparent 65%),
+      linear-gradient(var(--background), var(--background));
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(100,116,139,.4) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(100,116,139,0.55),
+    rgba(71,85,105,0.55)
+  );
+  border-radius: 100px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(148,163,184,0.75),
+    rgba(100,116,139,0.75)
+  );
+  background-clip: content-box;
+}
+
+::selection {
+  background: rgba(37,99,235,0.35);
+  color: #fff;
 }

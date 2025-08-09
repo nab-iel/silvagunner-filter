@@ -8,8 +8,10 @@ export const MessageContainer = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={cn("flex items-center justify-center h-full", className)}>
-    <p className="text-gray-500 dark:text-gray-400">{children}</p>
+  <div className={cn("flex items-center justify-center py-24", className)}>
+    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 tracking-wide">
+      {children}
+    </p>
   </div>
 );
 
@@ -23,7 +25,7 @@ export const VideoGrid = ({
 }) => (
   <div
     className={cn(
-      "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-4 gap-y-8",
+      "grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 auto-rows-fr",
       className
     )}
   >
@@ -41,7 +43,7 @@ export const Section = ({
 }) => (
   <div
     className={cn(
-      "flex flex-col gap-4 pt-4 border-t border-gray-200 dark:border-gray-700",
+      "flex flex-col gap-5 pt-5 border-t border-gray-200/70 dark:border-gray-700/60",
       className
     )}
   >

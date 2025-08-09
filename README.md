@@ -2,7 +2,7 @@
 
 This is a full-stack web application built with Next.js that allows users to browse, filter, and sort videos from the SiIvaGunner YouTube channel. It uses Next.js API routes to securely interact with the YouTube Data API, providing a responsive and interactive interface for exploring the channel's content.
 
-![Project Screenshot](image.png)
+![Project Screenshot](image.jpeg)
 
 ## Features
 

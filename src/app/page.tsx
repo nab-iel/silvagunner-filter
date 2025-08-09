@@ -135,10 +135,12 @@ export default function Home() {
   }, [videoData, minDuration, maxDuration, minViews, sortBy]);
 
   return (
-    <main className="flex min-h-screen bg-white dark:bg-black">
+    <main className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-96 bg-gray-50 dark:bg-gray-900/50 p-6 flex flex-col gap-6 border-r border-gray-200 dark:border-gray-800 flex-shrink-0">
-        <h1 className="text-2xl font-bold">SiIvaGunner Filter</h1>
+      <aside className="w-96 shrink-0 relative border-r border-gray-200/70 dark:border-gray-800/70 bg-white/65 dark:bg-gray-950/40 backdrop-blur-xl supports-[backdrop-filter]:bg-white/55 dark:supports-[backdrop-filter]:bg-gray-950/30 px-7 py-8 flex flex-col gap-7 overflow-y-auto sticky top-0 h-screen">
+        <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+          SiIvaGunner Filter
+        </h1>
         <div className="flex flex-col gap-4">
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Click the button to fetch the latest videos from the SiIvaGunner
@@ -210,7 +212,7 @@ export default function Home() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-6 overflow-auto">
+      <div className="flex-1 px-8 py-10 overflow-auto">
         {error && <MessageContainer>{error}</MessageContainer>}
         {loading && <MessageContainer>Loading videos...</MessageContainer>}
 
